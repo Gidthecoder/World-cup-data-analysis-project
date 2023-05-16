@@ -20,7 +20,7 @@ Before I started the analysis, I had some questions that needed answers. They ar
 8. Which teams conceded the most goals in world cup history.
 
 ### Data collection
-The dataset was gotten from the [kaggle](https://kg.com) website.  I downloaded it as a csv file.
+The dataset was gotten from the [kaggle](https://www.kaggle.com/datasets/jahaidulislam/fifa-world-cup-1930-2022-all-match-dataset) website.  I downloaded it as a csv file.
 
 ### Data cleaning
 I used pandas to:
