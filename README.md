@@ -35,16 +35,19 @@ I used PostgreSQL and SQL to write some complex statements that answered all of 
 
 QUESTION 1: which side is more likely to win the finals? home or away?
 
-`create table home_away_finals as
+```sql
+create table home_away_finals as
 select outcome, count(outcome) from world_cup
 where stage = 'final'
-group by outcome;`
+group by outcome;
+```
 
 
 
 QUESTION 2: does the host have a chance of winning the world cup
 
-`create table host_finals_win as
+```sql
+create table host_finals_win as
 select year, host, home_team, away_team, outcome,
 case
 	when outcome = 'home team win' and host = home_team then 'won'
@@ -52,25 +55,29 @@ case
 	else 'lost'
 end as won_world_cup
 from world_cup
-where stage = 'final';`
+where stage = 'final';
+```
 
 
 
 QUESTION 3: does the host have a chance of making it to the finals
 
-`create table host_in_finals as
+```sql
+create table host_in_finals as
 select year, host, home_team, away_team, outcome,
 case
 	when host = home_team or host = away_team then 'true'
 	else 'false'
 end as in_final
 from world_cup
-where stage = 'final';`
+where stage = 'final';
+```
 
 
 QUESTION 4: which countries has the most finals appearance and championship
 
-`create table team_finals_appearance as
+```sql
+create table team_finals_appearance as
 select home_team, count(home_team)  from world_cup
 where stage = 'final'
 group by home_team
@@ -112,9 +119,11 @@ on finals_appearance.team = winners_freq.winner;
 
 update team_appearance_won
 set won = 0
-where won is NULL ;`
+where won is NULL ;
+```
 
-check the remaining code [here](https://girhub.com/Gidthecoder/World-cup-data-analysis-project/blob/main/sql.txt)
+check the remaining code [here](https://github.com/Gidthecoder/World-cup-data-analysis-project/blob/main/sql.txt)
 ### Data visualization
 After the analysis, I connected my database to PowerBI, imported the tables, transformed it and used the final result to create a dashboard that visualized the answers to my questions.
+![visualization](https://github.com/Gidthecoder/World-cup-data-analysis-project/blob/main/visualization.png)
  
