@@ -27,7 +27,7 @@ I used pandas to:
 - Split the ‘match date’ column to Year, Month and Day.
 - Remove unnecessary columns: Month, Day, ...
 
-I also used pandas with sqlalchemy and psycorb2 to export the cleaned dataset to my PostgreSQL database.
+I also used pandas with sqlalchemy and psycopg2 to export the cleaned dataset to my PostgreSQL database.
 
 ### Data analysis
 I used PostgreSQL and SQL to write some complex statements that answered all of my questions. Here are some of the statements:
