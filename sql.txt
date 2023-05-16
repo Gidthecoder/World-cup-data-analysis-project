@@ -1,0 +1,197 @@
+-- Confirm the table has been created in postgreSQL
+SELECT * FROM world_cup;
+
+-- Rename table columns
+
+alter table highest_scoring_team
+rename column "Home Team Name" to
+"team_name";
+
+alter table finals
+rename column "Home Team Name" to home
+
+alter table finals
+rename column "Away Team Name" to away
+
+alter table finals
+rename column "Result" to r;
+
+alter table finals
+rename column "Year" to year;
+
+Alter table world_cup
+rename column "Result" to outcome;
+
+alter table world_cup
+rename column "Stage Name" to stage;
+
+alter table world_cup
+rename column "Country Name" to host;
+
+alter table world_cup
+rename column "Away Team Name" to away_team;
+
+alter table world_cup
+rename column "Home Team Name" to home_team;
+
+alter table world_cup
+rename column "Year" to year;
+
+alter table world_cup
+rename column "Home Team Score" to home_score;
+
+alter table world_cup
+rename column "Away Team Score" to away_score;
+
+
+
+-- QUESTION 1: which side is more likely to win the finals? home or away?
+
+create table home_away_finals as
+select outcome, count(outcome) from world_cup
+where stage = 'final'
+group by outcome;
+
+
+
+--QUESTION 2: does the host have a chance of winning the world cup
+
+create table host_finals_win as
+select year, host, home_team, away_team, outcome,
+case
+	when outcome = 'home team win' and host = home_team then 'won'
+	when outcome = 'away team win' and host = away_team then 'won'
+	else 'lost'
+end as won_world_cup
+from world_cup
+where stage = 'final';
+
+
+
+-- QUESTION 3: does the host have a chance of making it to the finals
+
+create table host_in_finals as
+select year, host, home_team, away_team, outcome,
+case
+	when host = home_team or host = away_team then 'true'
+	else 'false'
+end as in_final
+from world_cup
+where stage = 'final';
+
+
+
+-- QUESTION 4: which countries has the most finals appearance and championship
+
+create table team_finals_appearance as
+select home_team, count(home_team)  from world_cup
+where stage = 'final'
+group by home_team
+order by home_team asc;
+
+insert into team_finals_appearance
+select away_team, count(away_team)  from world_cup
+where stage = 'final'
+group by away_team
+order by away_team asc;
+
+create table finals_appearance as
+select home_team as team, sum(count) as appearance 
+from team_finals_appearance
+group by home_team
+order by home_team;
+
+create table winners as
+select outcome,
+case
+	when outcome = 'home team win' then home_team
+	when outcome = 'away team win' then away_team
+end as winner
+from world_cup
+where stage = 'final';
+
+create table winners_freq as
+select winner, count(winner) 
+from winners
+group by winner
+order by winner;
+
+create table team_appearance_won as
+select finals_appearance.team, finals_appearance.appearance, winners_freq.count as won
+from finals_appearance
+full outer join winners_freq
+on finals_appearance.team = winners_freq.winner;
+
+
+update team_appearance_won
+set won = 0
+where won is NULL ;
+
+
+
+-- QUESTION 5: teams with most goals
+
+create table goals_scored as
+select home_team as team, sum(home_score) as total_goal  from world_cup
+group by home_team
+order by total_goal desc;
+
+insert into goals_scored
+select away_team as team, sum(away_score) as total_goal  from world_cup
+group by away_team
+order by total_goal desc;
+
+create table team_goals_scored as
+select team, sum(total_goal) as total_goal from goals_scored
+group by team
+order by total_goal desc
+limit 10;
+
+
+
+-- QUESTION 6: teams that conceded most goals
+
+create table goals_conceded as
+select home_team as team, sum(away_score) as conceded  from world_cup
+group by home_team
+order by conceded desc;
+
+insert into goals_conceded
+select away_team as team, sum(home_score) as conceded  from world_cup
+group by away_team
+order by conceded desc
+limit 10;
+
+
+-- QUESTION 7: world cup with most goals
+
+create table wc_goals as
+select year, sum(home_score) as goals from world_cup
+group by year;
+
+insert into wc_goals
+select year, sum(away_score) as goals from world_cup
+group by year;
+
+create table world_cup_goals as
+select year, sum(goals) as goals from wc_goals
+group by year
+order by goals desc;
+
+
+-- QUESTION 8: world cup with most goals per game
+
+create table world_cup_matches as
+select year, count(year) as matches from world_cup
+group by year
+order by year asc;
+
+create table world_cup_avg_goals as
+select world_cup_matches.year, world_cup_matches.matches, world_cup_goals.goals,
+case
+	when world_cup_matches.year = world_cup_matches.year then round(world_cup_goals.goals/world_cup_matches.matches, 1)
+end as avg_goals
+from world_cup_matches
+join world_cup_goals
+on world_cup_goals.year = world_cup_matches.year
+order by avg_goals desc;
