@@ -1,5 +1,4 @@
 # World-cup-data-analysis-project
-An insightful analysis of all world cup match data with Python, PostgreSQL and PowerBI.
 Welcome to the world cup data analysis project. Despite being my first project, it has shown me the importance of using data analysis to gain insights.
 
 ## Tools used
